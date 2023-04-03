@@ -2,7 +2,9 @@ name: Deploy
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - gh-pages
 
 jobs:
   build:
@@ -20,9 +22,21 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Prepare and deploy
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build the app
         run: |
           npm install
-          npm run ng -- deploy --no-silent
+          npm run build --prod
+
+      - name: Pull Docker image
+        run: |
+          docker pull fangchiawen/testdocker0404:latest
+
+      - name: Run Docker container
+        run: |
+          docker run -d --rm -p 4200:4200 fangchiawen/testdocker0404:latest
+
+      - name: Deploy the app to GitHub Pages
+        run: |
+          npm run deploy --
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
