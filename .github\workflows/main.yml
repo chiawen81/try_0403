@@ -26,17 +26,14 @@ jobs:
         run: |
           npm install
           npm run build --prod
-
       - name: Pull Docker image
         run: |
           docker pull fangchiawen/testdocker0404:latest
-
       - name: Run Docker container
         run: |
           docker run -d --rm -p 4200:4200 fangchiawen/testdocker0404:latest
-
       - name: Deploy the app to GitHub Pages
         run: |
-          npm run deploy --
+          npm run ng -- deploy --no-silent
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
